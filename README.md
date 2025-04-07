@@ -34,7 +34,7 @@ Identity
 Configuración Rápida
 
 1. Clona el repositorio:
-git clone https://github.com/tuusuario/GameStore.git
+git clone https://github.com/davidorregodiaz/GameStore-Ecommerce.git
 
 2. Configura la cadena de conexión en appsettings.json del proyecto MVC:
 "ConnectionStrings": {
