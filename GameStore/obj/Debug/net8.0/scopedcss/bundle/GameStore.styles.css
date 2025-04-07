@@ -1,0 +1,196 @@
+/* _content/GameStore/Areas/Admin/Views/Shared/_Layout.cshtml.rz.scp.css */
+/* Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+a.navbar-brand[b-jiixscioz9] {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+a[b-jiixscioz9] {
+  color: #0077cc;
+}
+
+.btn-primary[b-jiixscioz9] {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active[b-jiixscioz9], .nav-pills .show > .nav-link[b-jiixscioz9] {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.border-top[b-jiixscioz9] {
+  border-top: 1px solid #e5e5e5;
+}
+.border-bottom[b-jiixscioz9] {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow[b-jiixscioz9] {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy[b-jiixscioz9] {
+  font-size: 1rem;
+  line-height: inherit;
+}
+
+.footer[b-jiixscioz9] {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px;
+}
+/* _content/GameStore/Areas/Customer/Views/Shared/_Layout.cshtml.rz.scp.css */
+/* Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+a.navbar-brand[b-j6uexukzql] {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+a[b-j6uexukzql] {
+  color: #0077cc;
+}
+
+.btn-primary[b-j6uexukzql] {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active[b-j6uexukzql], .nav-pills .show > .nav-link[b-j6uexukzql] {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.border-top[b-j6uexukzql] {
+  border-top: 1px solid #e5e5e5;
+}
+.border-bottom[b-j6uexukzql] {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow[b-j6uexukzql] {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy[b-j6uexukzql] {
+  font-size: 1rem;
+  line-height: inherit;
+}
+
+.footer[b-j6uexukzql] {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px;
+}
+/* _content/GameStore/Areas/Identity/Pages/_Layout.cshtml.rz.scp.css */
+/* Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+a.navbar-brand[b-jr4r0s4c9h] {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+a[b-jr4r0s4c9h] {
+  color: #0077cc;
+}
+
+.btn-primary[b-jr4r0s4c9h] {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active[b-jr4r0s4c9h], .nav-pills .show > .nav-link[b-jr4r0s4c9h] {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.border-top[b-jr4r0s4c9h] {
+  border-top: 1px solid #e5e5e5;
+}
+.border-bottom[b-jr4r0s4c9h] {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow[b-jr4r0s4c9h] {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy[b-jr4r0s4c9h] {
+  font-size: 1rem;
+  line-height: inherit;
+}
+
+.footer[b-jr4r0s4c9h] {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px;
+}
+/* _content/GameStore/Views/Shared/_Layout.cshtml.rz.scp.css */
+/* Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+a.navbar-brand[b-iuwtwudm05] {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+a[b-iuwtwudm05] {
+  color: #0077cc;
+}
+
+.btn-primary[b-iuwtwudm05] {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active[b-iuwtwudm05], .nav-pills .show > .nav-link[b-iuwtwudm05] {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.border-top[b-iuwtwudm05] {
+  border-top: 1px solid #e5e5e5;
+}
+.border-bottom[b-iuwtwudm05] {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow[b-iuwtwudm05] {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy[b-iuwtwudm05] {
+  font-size: 1rem;
+  line-height: inherit;
+}
+
+.footer[b-iuwtwudm05] {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px;
+}

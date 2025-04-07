@@ -1,0 +1,120 @@
+@using Microsoft.IdentityModel.Tokens
+@model List<VideoGame>
+
+
+
+<section class="bg-dark shopping-cart">
+    <div class="container py-5 px-0 bg-dark">
+        <div class="row d-flex justify-content-center align-items-center shopping-cart-row">
+            <div class="col-12 reservation-container">
+                <div class="card card-registration card-registration-2" style="border-radius: 15px;">
+                    <div class="card-body card-body-cart p-0">
+                        <div class="row g-0 card-body-row">
+                            <div class="col-lg-8">
+                                <div class="p-5">
+                                    <div class="d-flex justify-content-between align-items-center mb-5">
+                                        <h1 class="fw-bold mb-0" id="reservas">My Games</h1>
+                                        @if (!Model.IsNullOrEmpty())
+                                        {
+                                            <h6 class="mb-0 text-muted items">@Model.Count</h6>
+                                        }
+                                        else
+                                        {
+                                            <h6 class="mb-0 text-muted items">0</h6>
+                                        }
+                                    </div>
+                                    <div class="shopping-cart-items-container">
+                                        @if (!Model.IsNullOrEmpty())
+                                        {
+                                            foreach (var videogame in Model)
+                                            {
+                                                <hr class="my-4 separador">
+                                                <div id="" class="row mb-4 d-flex justify-content-between align-items-center shopping-item">
+                                                    <div class="col-md-2 col-lg-2 col-xl-2">
+                                                        <img src=@videogame.ImageUrl class="img-fluid rounded-3" alt="${videogame.name}">
+                                                    </div>
+                                                    <div class="col-md-3 col-lg-3 col-xl-3">
+                                                        <h6 class="text-muted">@videogame.Name</h6>
+                                                        <small class="m-0"><i class="fa fa-calendar-alt text-primary mr-2"></i>@videogame.Genre.Name</small>
+                                                    </div>
+                                                    <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
+                                                        <a class="text-decoration-underline text-muted" asp-area="Customer" asp-controller="Home" asp-action="Details" asp-route-id="@videogame.VideoGameId">See Details</a>
+                                                    </div>
+                                                    <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+                                                        <h6 class="mb-0">@videogame.Price</h6>
+                                                    </div>
+                                                    <div class="col-md-1 col-lg-1 col-xl-1 text-end">
+                                                        <a id="" role="button" class="btn-delete-shopping-item" asp-area="Customer" asp-controller="Home" asp-action="DeleteFromCart" asp-route-id="@videogame.VideoGameId"><i class="bi bi-x-lg"></i></a>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                    <hr class="my-4">
+        
+                                    <div class="pt-5">
+                                        <h6 class="mb-0"><a asp-area="Customer" asp-controller="Home" asp-action="Index"  class="text-body">
+                                            <i class="fas fa-long-arrow-alt-left me-2"></i>Back to home</a></h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 bg-body-tertiary">
+                                <div class="p-5">
+                                    <h3 class="fw-bold mb-5 mt-2 pt-1">Summary</h3>
+                                    <hr class="my-4">
+                                    <div class="d-flex justify-content-between mb-5">
+                                        <h5 class="text-uppercase">Total price</h5>
+                                        @if (!Model.IsNullOrEmpty())
+                                        {
+                                            decimal total = 0;
+                                            foreach (var videoGame in Model)
+                                            {
+                                                total += videoGame.Price;
+                                            }
+                                            <h5 class="total-quantity">@total</h5>
+                                        }
+                                        else
+                                        {
+                                            <h5 class="total-quantity">0</h5> 
+                                        }
+                                        
+                                    </div>
+                                    <a role="button" class="btn btn-dark btn-block btn-lg" onclick="CreateOrder('/Customer/Home/CreateOrder')">Finalizar Pedido</a>
+                                    <script>
+                                        async function CreateOrder(url){
+                                            await fetch(url,{
+                                                method : "POST"
+                                            })
+                                                .then(response => response.json())
+                                                .then(data => {
+                                                    if (data.success) {
+                                                        Swal.fire({
+                                                            title: "Success",
+                                                            text: "Your order has been created!",
+                                                            icon: "success"
+                                                        })
+                                                    }else{
+                                                        Swal.fire({
+                                                            icon: "error",
+                                                            title: "Oops...",
+                                                            text: "You need to login",
+                                                            footer: '<a href="/Identity/Account/Login">GO TO LOGIN</a>'
+                                                        });
+                                                    }
+                                                })
+                                                }
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts
+{
+    <script src="~/js/site.js"></script>
+}

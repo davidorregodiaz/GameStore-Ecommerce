@@ -1,0 +1,39 @@
+@model List<VideoGame>
+
+<section class="py-5 bg-dark">
+    <h5 class="text-start all-games-title text-white">All Games</h5>
+    <div class="container px-4 px-lg-5 mt-5">
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+            @foreach (var videogame in @Model)
+            {
+
+                <div class="col mb-5">
+
+                    <div class="card my-card bg-dark" style="width: 270px;height: 350px">
+                        <span class="badge rounded-pill bg-dark my-badge">@(videogame.Stock != 0 ? "On Sale" : "Sold Out")</span>
+                        <!-- Product image-->
+                        <img class="card-img-top object-fit-cover" src="@videogame.ImageUrl" alt="@videogame.Name" width="280px" height="160px"/>
+                        <!-- Product details-->
+                        <div class="card-body p-3">
+                            <div class="text-start text-white">
+                                <!-- Product name-->
+                                <h5 class="fw-bolder text-white">@videogame.Name</h5>
+                                <p class="text-secondary" style="margin-top: -4px">@videogame.Genre.Name</p>
+                                <!-- Product price-->
+                                @videogame.Price.ToString("c")
+                            </div>
+                        </div>
+                        <!-- Product actions-->
+                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                            <div class="text-center"><a class="btn border-white mt-auto btn-details" asp-area="Customer" asp-controller="Home" asp-action="Details" asp-route-id=@videogame.VideoGameId>Details</a></div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+@section Scripts{
+    <script src="~/js/site.js"></script>
+}

@@ -1,0 +1,343 @@
+﻿@using GameStore.Util
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.IdentityModel.Tokens
+
+
+@inject UserManager<User> UserManager;
+@inject SignInManager<User> SignInManager;
+@inject INotificationRepositorie NotificationRepositorie;
+
+@functions
+{
+    private string FormatDate(DateTime fechaActual, DateTime reviewDateCreated)
+    {
+        var diferenciaDias = fechaActual - reviewDateCreated;
+
+        if (diferenciaDias.TotalDays >= 1)
+        {
+            int dias = (int)diferenciaDias.TotalDays;
+            return dias == 1 ? "Hace 1 dia" : $"Hace {dias} dias";
+        }
+
+        if (diferenciaDias.TotalHours >= 1)
+        {
+            int hours = (int)diferenciaDias.TotalHours;
+            return hours == 1 ? "Hace 1 hora" : $"Hace {hours} horas";
+        }
+
+        if (diferenciaDias.TotalMinutes >= 1)
+        {
+            int minutes = (int)diferenciaDias.TotalMinutes;
+            return minutes == 1 ? "Hace 1 minuto" : $"Hace {minutes} minutos";
+        }
+
+        if (diferenciaDias.TotalSeconds >= 1)
+        {
+            int seconds = (int)diferenciaDias.TotalSeconds;
+            return seconds == 1 ? "Justo Ahora" : $"Hace {seconds} segundos";
+        }
+
+        return "";
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>GameStore</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.17.2/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+
+</head>
+<div class="wrapper-master">
+    <header>
+        <!-- Navigation-->
+        <nav class="navbar-light bg-dark">
+            <div class="container-fluid navbar-container px-4 px-lg-5">
+                <div class="d-flex justify-content-between" style="width: 100%">
+                    <div class="d-flex align-items-center">
+                        <a class="text-white sidebar-link" data-bs-toggle="offcanvas" href="#sidebarMenu" role="button" aria-controls="sidebarMenu">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"></path>
+                            </svg>
+                        </a>
+                        <a class="navbar-brand text-white" href="#!">Game Store</a>
+                    </div>
+
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        var user = UserManager.GetUserAsync(User).GetAwaiter().GetResult();
+                        var notifications = NotificationRepositorie.GetNotificationsAsync().GetAwaiter().GetResult();
+                        int notificationCount = 0;
+                        <!-- Dropdown - Alerts -->
+                        <div class="my-custom-dropdown animate__animated">
+                            <div class="d-flex justify-content-between bg-primary text-white p-2 dropdown-header">
+                                <h6 class="text-center">
+                                    Alerts Center
+                                </h6>
+                                <button type="button" class="my-btn-close" onclick="closeNotifications(event)"><i class="bi bi-x-lg"></i></button>
+                                <script>
+                                    function closeNotifications(event){
+                                        let notis = event.target.closest(".my-custom-dropdown");
+                                        let notiContainer = document.querySelector(".notification-container");
+                                        let notisItems = document.querySelectorAll(".list-group-item");
+                                        for (let item of notisItems){
+                                            if (item.classList.contains("animate__bounceIn")){
+                                                item.classList.remove("animate__bounceIn");
+                                            }
+                                        }
+                                        notiContainer.style.overflow = "hidden";
+                                        notis.classList.add("animate__bounceOut","animate__faster");
+                                        setTimeout(()=>{
+                                            notis.style.zIndex ="-1";
+                                            notis.style.display = "none";
+                                        },500)
+                                    }
+                                </script>
+                            </div>
+
+                            @if (!notifications.IsNullOrEmpty())
+                            {
+                                <div class="list-group notification-container">
+                                    @foreach (var notification in notifications.OrderByDescending(n => n.NotificationId))
+                                    {
+                                        foreach (var userNotification in notification.UserNotifications)
+                                        {
+                                            if (userNotification.UserId == user.Id && !notification.IsRead)
+                                            {
+                                                <div  class="list-group-item list-group-item-action">
+                                                    <a href="/Customer/Home/orderinfo?id=@notification.OrderId" class="my-list-item">
+                                                        <div class="d-flex w-100 justify-content-between">
+                                                            <h5 class="mb-1">@notification.Message</h5>
+                                                            <small class="text-body-secondary">@FormatDate(DateTime.Now, notification.Date)</small>
+                                                        </div>
+                                                        <p class="mb-1">Se ha procesado correctamente</p>
+                                                    </a>
+                                                    <small class="text-body-secondary mark-text" role="button" onclick="markTxt(event,'/Customer/Home/readorder?id=@notification.NotificationId')">Mark as read.</small>
+
+                                                </div>
+
+
+                                                notificationCount++;
+                                            }
+                                        }
+
+                                    }
+                                    <input class="noti-counter" value="@notificationCount" hidden/>
+                                    <script>
+                                        async function markTxt(event,url){
+                                            let noti = event.target.parentElement;
+                                            let notiCounter = parseInt(document.querySelector(".noti-counter").getAttribute("value"));
+                                            let notiHTMLCount = document.querySelector(".my-badge");
+                                            notiCounter = notiCounter-1;
+                                            document.querySelector(".noti-counter").setAttribute("value",notiCounter.toString());
+                                            let nextNoti = noti.nextElementSibling;
+                                            notiHTMLCount.innerHTML = notiCounter.toString();
+                                            noti.classList.add("animate__animated","animate__fadeOutRight","animate__faster");
+                                            setTimeout(()=>{
+                                                noti.remove();
+                                                nextNoti.classList.add("animate__animated","animate__bounceIn");
+                                            },500)
+
+                                            await fetch(url, {
+                                                method : "POST"
+                                            })
+                                                .then(res => res.json())
+                                                .then(data => {
+                                                    console.log(data);
+                                                })
+
+                                        }
+                                    </script>
+                                </div>
+                            }
+                            <button class="list-group-item list-group-item-action text-muted text-center small" onclick="showAllAlerts()">Show All Alerts</button>
+                            <script>
+                                function showAllAlerts(event){
+                                    let notificationHTML = document.querySelector(".notification-container");
+                                    console.log(notificationHTML);
+                                    notificationHTML.style.overflow = "auto";
+                                }
+                            </script>
+                        </div>
+                        <div class="user-container d-flex">
+                            <!-- Nav Item - Alerts -->
+                            <li class="no-arrow mx-1 custom-bell text-center">
+                                <button class="text-white bg-dark border-0" href="#" onclick="animateNotification()">
+                                    <i class="bi bi-custom bi-bell-fill"></i>
+                                    <!-- Counter - Alerts -->
+
+                                </button>
+                                <script>
+                                    function animateNotification(){
+                                        const myCustomDropdown = document.querySelector(".my-custom-dropdown");
+                                        if (myCustomDropdown.classList.contains("animate__bounceOut")){
+                                            myCustomDropdown.classList.remove("animate__bounceOut");
+                                        }
+                                        if (myCustomDropdown.classList.contains("animate__faster")){
+                                            myCustomDropdown.classList.remove("animate__faster");
+                                        }
+                                        myCustomDropdown.style.zIndex = "1000";
+                                        myCustomDropdown.style.display = "block";
+
+                                    }
+                                </script>
+
+                                <span class="badge bg-warning my-badge">@notificationCount</span>
+                            </li>
+
+
+                            <!-- Nav Item - Messages -->
+                            <li class="nav-item dropdown no-arrow mx-1">
+                                <button class="nav-link dropdown-toggle text-white bg-dark" href="#" id="messagesDropdown"
+                                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="bi bi-custom bi-envelope-fill"></i>
+                                    <!-- Counter - Messages -->
+                                    <span class="badge bg-warning">4</span>
+                                </button>
+                                <!-- Dropdown - Messages -->
+                                <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                     aria-labelledby="messagesDropdown">
+                                    <h6 class="dropdown-header">
+                                        Message Center
+                                    </h6>
+                                    <a class="dropdown-item d-flex align-items-center" href="#">
+                                        <div class="dropdown-list-image mr-3">
+                                            <img class="rounded-circle" src="img/undraw_profile_1.svg"
+                                                 alt="...">
+                                            <div class="status-indicator bg-success"></div>
+                                        </div>
+                                        <div class="font-weight-bold">
+                                            <div class="text-truncate">Hi there! I am wondering if you can help me with a
+                                                problem I've been having.</div>
+                                            <div class="small text-gray-500">Emily Fowler · 58m</div>
+                                        </div>
+                                    </a>
+                                    <a class="dropdown-item d-flex align-items-center" href="#">
+                                        <div class="dropdown-list-image mr-3">
+                                            <img class="rounded-circle" src="img/undraw_profile_2.svg"
+                                                 alt="...">
+                                            <div class="status-indicator"></div>
+                                        </div>
+                                        <div>
+                                            <div class="text-truncate">I have the photos that you ordered last month, how
+                                                would you like them sent to you?</div>
+                                            <div class="small text-gray-500">Jae Chun · 1d</div>
+                                        </div>
+                                    </a>
+                                    <a class="dropdown-item d-flex align-items-center" href="#">
+                                        <div class="dropdown-list-image mr-3">
+                                            <img class="rounded-circle" src="img/undraw_profile_3.svg"
+                                                 alt="...">
+                                            <div class="status-indicator bg-warning"></div>
+                                        </div>
+                                        <div>
+                                            <div class="text-truncate">Last month's report looks great, I am very happy with
+                                                the progress so far, keep up the good work!</div>
+                                            <div class="small text-gray-500">Morgan Alvarez · 2d</div>
+                                        </div>
+                                    </a>
+                                    <a class="dropdown-item d-flex align-items-center" href="#">
+                                        <div class="dropdown-list-image mr-3">
+                                            <img class="rounded-circle" src="https://source.unsplash.com/Mv9hjnEUHR4/60x60"
+                                                 alt="...">
+                                            <div class="status-indicator bg-success"></div>
+                                        </div>
+                                        <div>
+                                            <div class="text-truncate">Am I a good boy? The reason I ask is because someone
+                                                told me that people say this to all dogs, even if they aren't good...</div>
+                                            <div class="small text-gray-500">Chicken the Dog · 2w</div>
+                                        </div>
+                                    </a>
+                                    <a class="dropdown-item text-center small text-gray-500" href="#">Read More Messages</a>
+                                </div>
+                            </li>
+
+                            <div class="topbar-divider d-sm-block"></div>
+                            <div class="profile-img-container" style="width: 30px;height: 30px">
+                                <img src="@user?.ProfileImageUrl" style="width: 100%;height: 100%" class="object-fit-contain user-profile-img">
+                            </div>
+                            <div class="info-user">
+                                <a class="text-white user-tag text-decoration-none" asp-area="Identity" asp-page="/Account/Manage/Index">@user?.GamerTag</a>
+                                <a class="text-muted user-email text-decoration-none" asp-area="Identity" asp-page="/Account/Manage/Index">@user.Email</a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </nav>
+        <!-- Sidebar-->
+        <div class="offcanvas offcanvas-start bg-dark" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuTitle">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title text-white" id="sidebarMenuTitle">Menu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <div class="navigation-items mt-3">
+                    <ul class="navigation-items-list text-white">
+                        <li class="navigation-item"><a class="navigation-item-link" asp-area="Customer" asp-controller="Home" asp-action="Index"><i class="bi bi-house-door-fill"></i><span class="navigation-name">Home</span></a></li>
+                        <li class="navigation-item nav-cart"><a class="navigation-item-link" role="button" onclick="setCartNoti()" asp-area="Customer" asp-controller="Home" asp-action="ShoppingCart"><i class="bi bi-cart-fill"></i><span class="navigation-name">My Games</span></a><div class="cart-notification"></div></li>
+                        <hr/>
+                        <li class="navigation-item"><a class="navigation-item-link" asp-area="Customer" asp-controller="Home" asp-action="AllGames"><i class="bi bi-controller"></i><span class="navigation-name">All Games</span></a></li>
+                        <li class="navigation-item"><a class="navigation-item-link" asp-area="Customer" asp-controller="Home" asp-action="Popular"><i class="bi bi-award-fill"></i><span class="navigation-name">Popular</span></a></li>
+                        <li class="navigation-item"><a class="navigation-item-link" href="#"><i class="bi bi-bar-chart-steps"></i><span class="navigation-name">New Releases</span></a></li>
+                        <hr/>
+                        @if (User.IsInRole(Roles.Admin))
+                        {
+                            <li class="navigation-item"><a class="navigation-item-link" asp-area="Admin" asp-controller="Admin" asp-action="Index"><i class="bi bi-gear"></i><span class="navigation-name">Videogames Inventory</span></a></li>
+                            <li class="navigation-item"><a class="navigation-item-link" asp-area="Admin" asp-controller="Admin" asp-action="Orders"><i class="bi bi-file-earmark-text"></i><span class="navigation-name">Pending Orders</span></a></li>
+                            <li class="navigation-item"><a class="navigation-item-link" asp-area="Admin" asp-controller="Admin" asp-action="OrdersRecord"><i class="bi bi-bar-chart-line-fill"></i><span class="navigation-name">Orders Record</span></a></li>
+                            <hr/>
+                        }
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <li class="navigation-item"><a class="navigation-item-link" asp-area="Customer" asp-controller="Home" asp-action="OrdersRecord"><i class="bi bi-bar-chart-line-fill"></i><span class="navigation-name">My Orders</span></a></li>
+                            <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                                <button id="logout" type="submit" class="navigation-item-link btn btn-link border-0 text-white"><i class="bi bi-box-arrow-in-left text-danger"></i><span class="navigation-name">Logout</span></button>
+                            </form>
+                        }
+                        else
+                        {
+                            <div class="wrapper-login">
+                                <li class="navigation-item navigation-item-register">
+                                    <a class="navigation-item-link text-white" id="register" asp-area="Identity" asp-page="/Account/Register"> <i class="bi bi-people-fill"></i><span class="navigation-name">Register</span></a>
+                                </li>
+                                <li class="navigation-item navigation-item-login">
+                                    <a class="navigation-item-link text-white" id="login" asp-area="Identity" asp-page="/Account/Login"><i class="bi bi-box-arrow-in-right"></i><span class="navigation-name">Login</span></a>
+                                </li>
+                            </div>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+    <body>
+    @RenderBody()
+    </body>
+    <!-- Footer-->
+    <footer class="py-5 bg-dark footer">
+        <div class="container"><p class="m-0 text-center text-white">Copyright &copy; Your Website 2023</p></div>
+    </footer>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+<partial name="_Notification"/>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+<script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js" asp-append-version="true"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+
+</html>

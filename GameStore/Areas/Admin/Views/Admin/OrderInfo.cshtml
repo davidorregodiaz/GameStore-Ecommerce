@@ -1,0 +1,86 @@
+@model Order
+
+
+
+<input value="@Model.OrderId" id="orderId" hidden>
+
+<div class="container py-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h4 class="mb-0">Order #@Model.OrderId</h4>
+                    <p class="text-muted mb-0">Placed on: @Model.OrderDate</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    @if (!Model.Accepted)
+                    {
+                        <span class="badge bg-danger">Pending</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Shipped</span>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Unit Price</th>
+                        <th class="text-end">Subtotal</th>
+                    </tr>
+                    </thead>
+                    <tbody class="order-info-table-body">
+                    </tbody>
+                </table>
+            </div>
+            <div class="row justify-content-end">
+                <div class="col-md-4">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal:</span>
+                                <span>$479.97</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Tax:</span>
+                                <span>$48.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Shipping:</span>
+                                <span>$12.99</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Discount:</span>
+                                <span class="text-success">-$25.00</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <strong>Total:</strong>
+                                <strong class="text-primary">$515.96</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4">
+                <a class="btn btn-outline-secondary me-2" asp-area="Admin" asp-controller="Admin" asp-action="Orders">
+                    <i class="bi bi-arrow-left"></i> Back to Orders
+                </a>
+                <button class="btn btn-primary">
+                    <i class="bi bi-printer"></i> Print Order
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <script src="~/js/orderInfo.js"></script>
+}

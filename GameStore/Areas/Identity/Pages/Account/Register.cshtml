@@ -1,0 +1,84 @@
+﻿@page
+@using GameStore.Util
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow-lg">
+                <div class="card-body p-4">
+                    <h2 class="text-center mb-4">Gamer Registration</h2>
+                    <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" enctype="multipart/form-data">
+                        <input asp-for="Input.Role" class="form-control" aria-required="true" hidden value="@Roles.Admin"/>
+                        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                        <div class="text-center mb-4">
+                            <div class="position-relative d-inline-block">
+                                <img id="profilePreview" src="https://images.unsplash.com/photo-1511367461989-f85a21fda167" class="rounded-circle" width="150" height="150" alt="Profile Preview">
+                                <label for="profilePicture" class="btn btn-sm btn-primary position-absolute bottom-0 end-0">
+                                    <i class="bi bi-camera"></i>
+                                </label>
+                            </div>
+                            <input type="file" name="file" class="d-none" id="profilePicture" accept=".jpg,.jpeg,.png" required>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Input.GamerTag" class="form-label">Gamer Tag</label>
+                            <input asp-for="Input.GamerTag" class="form-control" aria-required="true" placeholder="Jhon" />
+                            <span asp-validation-for="Input.GamerTag" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                            <label asp-for="Input.Email">Email</label>
+                            <span asp-validation-for="Input.Email" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                            <label asp-for="Input.Password">Password</label>
+                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                            <label asp-for="Input.ConfirmPassword">Confirm Password</label>
+                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+                            <button type="reset" class="btn btn-secondary">Reset</button>
+                        </div>
+                        <div class="text-center mt-3">
+                            <p>Or register with</p>
+                            <div class="d-flex justify-content-center gap-3">
+                                <button type="button" class="btn btn-outline-primary"><i class="bi bi-google"></i></button>
+                                <button type="button" class="btn btn-outline-primary"><i class="bi bi-facebook"></i></button>
+                                <button type="button" class="btn btn-outline-primary"><i class="bi bi-twitter"></i></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById("profilePicture").addEventListener("change", function(event) {
+            const file = event.target.files[0]; // Obtiene el archivo seleccionado
+
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const imgElement = document.getElementById("profilePreview");
+                    imgElement.src = e.target.result; // Asigna la imagen cargada
+                };
+
+                reader.readAsDataURL(file); // Convierte la imagen en base64
+            }
+});
+    </script>
+}

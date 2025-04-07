@@ -1,0 +1,261 @@
+@using Microsoft.AspNetCore.Identity
+@using NuGet.Protocol
+@model GameReviewVm
+@inject UserManager<User> UserManager;
+@inject SignInManager<User> SignInManager;
+
+
+@{
+    var user = UserManager.GetUserAsync(User).GetAwaiter().GetResult();
+    string DiferenciaDias;
+    DateTime FechaActual = DateTime.Now;
+    int ratingBalance = 0;
+}
+
+@functions
+{
+    private string FormatDate(DateTime fechaActual, DateTime reviewDateCreated)
+    {
+        var diferenciaDias = fechaActual - reviewDateCreated;
+
+        if (diferenciaDias.TotalDays >= 1)
+        {
+            int dias = (int)diferenciaDias.TotalDays;
+            return dias == 1 ? "Hace 1 dia" : $"Hace {dias} dias";
+        }
+        if (diferenciaDias.TotalHours >= 1)
+        {
+            int hours = (int)diferenciaDias.TotalHours;
+            return hours == 1 ? "Hace 1 hora" : $"Hace {hours} hora";
+        }
+        if (diferenciaDias.TotalMinutes >= 1)
+        {
+            int minutes = (int)diferenciaDias.TotalMinutes;
+            return minutes == 1 ? "Hace 1 minuto" : $"Hace {minutes} minuto";
+        }
+        if (diferenciaDias.TotalSeconds >= 1)
+        {
+            int seconds = (int)diferenciaDias.TotalSeconds;
+            return seconds == 1 ? "Justo Ahora" : $"Hace {seconds} segundos";
+        }
+
+        return "";
+    }
+
+    private decimal CalculateRate(decimal rating, int count)
+    {
+        if (rating != 0)
+        {
+            return Math.Round(rating / count,2);
+
+        }
+
+        return 0;
+    }
+}
+
+@if (Model.videoGame.Reviews.Any())
+{
+    @foreach (var review in @Model.videoGame.Reviews)
+    {
+        ratingBalance += review.Rating;
+    }
+}
+
+
+<section class="py-5 bg-dark">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="row gx-4 gx-lg-5 align-items-center">
+            <div class="col-md-6 img-game-details-container"><img class="card-img-top mb-5 mb-md-0 object-fit-contain" style="max-width: 100%;max-height: 100%"  src=@Model.videoGame.ImageUrl alt="@Model.videoGame.Name" /></div>
+            <div class="col-md-6">
+                <h1 class="display-5 fw-bolder text-white">@Model.videoGame.Name</h1>
+                <p class="lead text-white ">@Model.videoGame.Description</p>
+                <p class="text-white">@Model.videoGame.Price.ToString("c")</p>
+                <div class="rating mb-5 text-white">
+                    <i class="bi text-white star" data-rating="1"></i>
+                    <i class="bi text-white star" data-rating="2"></i>
+                    <i class="bi text-white star" data-rating="3"></i>
+                    <i class="bi text-white star" data-rating="4"></i>
+                    <i class="bi text-white star" data-rating="5"></i>
+                    <span class="ms-2 text-white rating-value" rating-value="@CalculateRate(ratingBalance,Model.videoGame.Reviews.Count)">@CalculateRate(ratingBalance,Model.videoGame.Reviews.Count)</span>
+                    <script>
+                        document.addEventListener("DOMContentLoaded",()=>{
+                            setRatingDetails();
+                        })
+                        function setRatingDetails(){
+                            let allStars = document.querySelectorAll(".star");
+                            let ratingValue = parseFloat(document.querySelector(".rating-value").getAttribute("rating-value"));
+                            console.log(allStars);
+                            console.log(ratingValue);
+                           
+                            for (let star of allStars){
+                                if (star.getAttribute('data-rating') <= ratingValue){
+                                    star.classList.add("bi-star-fill")
+                                }else{
+                                    star.classList.add('bi-star')
+                                }
+                            }
+                        }
+                    </script>
+                </div>
+                <div class="d-flex text-white">
+                    @if (Model.videoGame.Stock != 0)
+                    {
+                        <a onclick="addToCart('/Customer/Home/AddToCart?id=@Model.videoGame.VideoGameId')" class="btn border-white flex-shrink-0 btn-cart-details" role="button">
+                            <i class="bi-cart-fill me-1"></i>
+                            Add to cart
+                        </a>
+                    }
+                    else
+                    {
+                        <button onclick="addToCart('/Customer/Home/AddToCart?id=@Model.videoGame.VideoGameId')" class="btn border-white flex-shrink-0 btn-cart-details" disabled>
+                            <i class="bi-cart-fill me-1"></i>
+                            Add to cart
+                        </button>
+                    }
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="wrapper bg-dark">
+    <div class="container py-5 bg-dark">
+        <div class="comments-section">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="mb-0 text-white">Game Reviews (@Model.videoGame.Reviews.Count)</h4>
+            </div>
+            
+            @foreach (var review in @Model.videoGame.Reviews)
+            {
+                @(DiferenciaDias = FormatDate(FechaActual,review.DateCreated))
+                @(ratingBalance += review.Rating)
+                <div class="comment-card mb-3">
+                    <div class="card bg-dark border-white">
+                        <div class="card-body">
+                            <div class="d-flex align-items-start">
+                                <img src="@review.User.ProfileImageUrl" alt="user" class="rounded-circle me-3" width="40" height="40">
+                                <div class="w-100 diferencia-dias-padre">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1 text-white">@review.User.GamerTag</h6>
+                                        </div>
+                                        <small class="text-muted text-white date-time-review">@DiferenciaDias</small>
+                                        
+                                    </div>
+                                    @{
+                                        var rating = @review.Rating;
+                                    }
+                                    <div class="mb-2 star-btn-container">
+                                        <div class="star-btn-review" data-rating="1">
+                                            <i class="bi bi-star-fill"></i>
+                                        </div>
+                                        <div class="star-btn-review" data-rating="2">
+                                            <i class="bi bi-star-fill"></i>
+                                        </div>
+                                        <div class="star-btn-review" data-rating="3">
+                                            <i class="bi bi-star-fill"></i>
+                                        </div>
+                                        <div class="star-btn-review" data-rating="4">
+                                            <i class="bi bi-star-fill"></i>
+                                        </div>
+                                        <div class="star-btn-review" data-rating="5">
+                                            <i class="bi bi-star-fill"></i>
+                                        </div>
+                                        <input hidden value="@rating" class="input-rating">
+                                    </div>
+                                    <p class="mb-2 text-white">@review.Comment</p>
+                                    <div class="d-flex align-items-center">
+                                        <button class="btn btn-sm btn-outline-secondary me-2 text-white">
+                                            <i class="bi bi-hand-thumbs-up"></i> Helpful (24)
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (SignInManager.IsSignedIn(User))
+            {
+                <div class="row justify-content-start">
+                    <div class="col-lg-8">
+                        <form method="post">
+                            <input asp-for="review.VideoGameId" value="@Model.videoGame.VideoGameId" hidden>
+                            <input asp-for="review.UserId" value="@user.Id" hidden>
+                            <div class="mb-3">
+                                <label asp-for="@Model.review.Comment" class="form-label text-white">Your Review</label>
+                                <textarea role="input" asp-for="@Model.review.Comment" class="form-control bg-dark text-white" id="comment" rows="3" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <div class="stars d-flex justify-content-start gap-2" role="radiogroup" aria-label="Rate your experience from 1 to 5 stars">
+                                    <div class="star-btn" role="radio" aria-label="1 star" data-rating="1" onclick="setRating(event)">
+                                        <i class="bi bi-star-fill"></i>
+                                    </div>
+                                    <div class="star-btn" role="radio" aria-label="2 stars" data-rating="2" onclick="setRating(event)">
+                                        <i class="bi bi-star-fill"></i>
+                                    </div>
+                                    <div class="star-btn" role="radio" aria-label="3 stars" data-rating="3" onclick="setRating(event)">
+                                        <i class="bi bi-star-fill"></i>
+                                    </div>
+                                    <div class="star-btn" role="radio" aria-label="4 stars" data-rating="4" onclick="setRating(event)">
+                                        <i class="bi bi-star-fill"></i>
+                                    </div>
+                                    <div class="star-btn" role="radio" aria-label="5 stars" data-rating="5" onclick="setRating(event)">
+                                        <i class="bi bi-star-fill"></i>
+                                    </div>
+                                    <script>
+                                    function setRating(event){
+                                        let starBtn = event.target.closest(".star-btn");
+                                        let allStars = document.querySelectorAll(".star-btn");
+                                        let ratingValue = parseInt(event.target.closest(".star-btn").getAttribute('data-rating'));
+                                        
+                                        for (let star of allStars){
+                                            if (star.getAttribute('data-rating') <= ratingValue){
+                                                star.style.color = "var(--accent)";
+                                            }else{
+                                                star.style.color = "#d4d4d4";
+                                            }
+                                        }
+                                        
+                                        
+                                        document.querySelector(".selected-rating").innerHTML = ratingValue;      
+                                        document.getElementById("ratingValue").value = ratingValue;
+                                    }
+                                </script>
+                                    <input asp-for="@Model.review.Rating" value="" id="ratingValue" hidden>
+                                </div>
+                                <div class="rating-value mt-3">
+                                    <span class="selected-rating">0</span>/5
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary post-review">Post Review</button>
+                        </form>
+                    
+                    </div>
+                </div>
+            }
+            
+        </div>
+    </div>
+</div>
+<script>
+    let ratings = document.querySelectorAll(".input-rating");
+    for (let rating of ratings){
+        let starContainer = rating.parentNode;
+        let stars = starContainer.children;
+        for (let star of stars){
+            if (star.getAttribute("data-rating") <= rating.getAttribute('value')){
+                star.style.color = "var(--accent)";
+            }else{
+                star.style.color = "#d4d4d4";
+            }
+        }
+    }
+</script>
+
+
+@section Scripts{
+    <script src="~/js/site.js"></script>
+    
+}
